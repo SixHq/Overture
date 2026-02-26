@@ -36,38 +36,69 @@ You have access to Overture, a visual plan execution tool that displays your exe
         setup_instructions="How to get this value"
       />
     </node>
-
-    <!-- Decision Node: A branching point with options -->
-    <node id="n2" type="decision" status="pending">
-      <title>Choose implementation approach</title>
-      <description>Description of the decision</description>
-
-      <branch id="b1" label="Option A">
-        <description>Details about this approach</description>
-        <pros>Advantages of this option</pros>
-        <cons>Disadvantages of this option</cons>
-      </branch>
-
-      <branch id="b2" label="Option B">
-        <description>Details about this approach</description>
-        <pros>Advantages of this option</pros>
-        <cons>Disadvantages of this option</cons>
-      </branch>
-    </node>
-
-    <!-- Task that belongs to a branch -->
-    <node id="n3" type="task" status="pending" branch_parent="n2" branch_id="b1">
-      <title>Task specific to Option A</title>
-      <description>This task only runs if user selects Option A</description>
-    </node>
   </nodes>
 
   <edges>
     <edge id="e1" from="n1" to="n2" />
-    <!-- Branch edges are implicit based on branch_parent/branch_id -->
   </edges>
 </plan>
 ```
+
+## Creating Branches (Simplified Approach)
+
+Branches are automatically detected from the graph structure. **You don't need explicit decision nodes.**
+
+When a node has **multiple outgoing edges**, it becomes a branch point, and the UI will:
+1. Render the branching options visually
+2. Let the user select which branch to follow
+3. Only execute the selected branch path
+
+### Branch Example
+
+```xml
+<plan id="plan_styling" title="Set up project styling" agent="claude-code">
+  <nodes>
+    <!-- This node becomes a branch point because it has multiple outgoing edges -->
+    <node id="setup" type="task" status="pending">
+      <title>Initialize project</title>
+      <description>Create the base project structure</description>
+    </node>
+
+    <!-- Option A: Tailwind CSS path -->
+    <node id="tailwind" type="task" status="pending">
+      <title>Set up Tailwind CSS</title>
+      <description>Install and configure Tailwind CSS for utility-first styling</description>
+    </node>
+
+    <!-- Option B: CSS Modules path -->
+    <node id="css-modules" type="task" status="pending">
+      <title>Set up CSS Modules</title>
+      <description>Configure CSS Modules for scoped styling</description>
+    </node>
+
+    <!-- Convergence point: both branches lead here -->
+    <node id="components" type="task" status="pending">
+      <title>Build components</title>
+      <description>Create the UI components using the chosen styling approach</description>
+    </node>
+  </nodes>
+
+  <edges>
+    <!-- These two edges from 'setup' make it a branch point -->
+    <edge id="e1" from="setup" to="tailwind" />
+    <edge id="e2" from="setup" to="css-modules" />
+
+    <!-- Both branches converge to 'components' -->
+    <edge id="e3" from="tailwind" to="components" />
+    <edge id="e4" from="css-modules" to="components" />
+  </edges>
+</plan>
+```
+
+In this example:
+- `setup` automatically becomes a branch point (detected from having 2 outgoing edges)
+- The user selects either `tailwind` or `css-modules` in the UI
+- Only the selected path executes, then continues to `components`
 
 ## Available MCP Tools
 
@@ -123,7 +154,7 @@ Mark the plan as failed with an error.
 
 1. **Be Exhaustive**: Break down tasks to atomic steps. Don't say "build landing page" - list every component, every section.
 
-2. **Use Decision Nodes**: When there are valid alternative approaches, create a decision node so the user can choose.
+2. **Create Branches with Edges**: When there are alternative approaches, create multiple nodes and use edges to create a branch point. The node with multiple outgoing edges becomes the branch point.
 
 3. **Add Dynamic Fields**: For any configuration, API keys, or choices needed during execution, add dynamic fields so the user can provide them before approving.
 
@@ -153,24 +184,16 @@ Mark the plan as failed with an error.
       <complexity>low</complexity>
     </node>
 
-    <node id="n3" type="decision" status="pending">
-      <title>Choose styling approach</title>
-      <description>Select how to style the application</description>
-      <branch id="b1" label="Tailwind CSS">
-        <description>Utility-first CSS framework</description>
-        <pros>Fast development, consistent design, small bundle</pros>
-        <cons>HTML can get verbose</cons>
-      </branch>
-      <branch id="b2" label="CSS Modules">
-        <description>Scoped CSS with traditional approach</description>
-        <pros>Clean HTML, full CSS control</pros>
-        <cons>More files, slower iteration</cons>
-      </branch>
+    <!-- Styling options: n2 branches to both tailwind and css-modules -->
+    <node id="tailwind" type="task" status="pending">
+      <title>Set up Tailwind CSS</title>
+      <description>Install and configure Tailwind CSS with Vite. Utility-first CSS framework - fast development, consistent design, small bundle.</description>
+      <complexity>low</complexity>
     </node>
 
-    <node id="n4" type="task" status="pending" branch_parent="n3" branch_id="b1">
-      <title>Set up Tailwind CSS</title>
-      <description>Install and configure Tailwind CSS with Vite</description>
+    <node id="css-modules" type="task" status="pending">
+      <title>Set up CSS Modules</title>
+      <description>Configure CSS Modules for scoped styling. Clean HTML, full CSS control.</description>
       <complexity>low</complexity>
     </node>
 
@@ -213,8 +236,12 @@ Mark the plan as failed with an error.
 
   <edges>
     <edge id="e1" from="n1" to="n2" />
-    <edge id="e2" from="n2" to="n3" />
-    <edge id="e3" from="n3" to="n5" />
+    <!-- n2 becomes a branch point with two outgoing edges -->
+    <edge id="e2a" from="n2" to="tailwind" />
+    <edge id="e2b" from="n2" to="css-modules" />
+    <!-- Both branches converge at n5 -->
+    <edge id="e3a" from="tailwind" to="n5" />
+    <edge id="e3b" from="css-modules" to="n5" />
     <edge id="e4" from="n5" to="n6" />
     <edge id="e5" from="n6" to="n7" />
     <edge id="e6" from="n7" to="n8" />

@@ -1,6 +1,6 @@
 // Plan types matching the UI store
 export type NodeStatus = 'pending' | 'active' | 'completed' | 'failed' | 'skipped';
-export type NodeType = 'task' | 'decision';
+export type NodeType = 'task'; // Simplified: only task nodes, branches inferred from graph structure
 export type FieldType = 'string' | 'secret' | 'select' | 'boolean' | 'number' | 'file';
 
 export interface DynamicField {
@@ -60,14 +60,19 @@ export interface PlanNode {
   expectedOutput?: string;
   risks?: string;
   dynamicFields: DynamicField[];
-  branches?: Branch[];
-  selectedBranchId?: string;
-  branchParent?: string;
-  branchId?: string;
   output?: string;
   attachments?: FileAttachment[];
   metaInstructions?: string;
   mcpServers?: McpServer[];
+  // Branch detection (computed from graph structure)
+  isBranchPoint?: boolean;       // True if this node has multiple outgoing edges (fan-out)
+  branchTargetIds?: string[];    // IDs of nodes this branches to (for branch points)
+  branchSourceId?: string;       // ID of the branch point node this is a target of
+  // Legacy fields (kept for backward compatibility, will be ignored)
+  branches?: Branch[];
+  selectedBranchId?: string;
+  branchParent?: string;
+  branchId?: string;
 }
 
 export interface PlanEdge {

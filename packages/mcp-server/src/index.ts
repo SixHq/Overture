@@ -82,9 +82,10 @@ const GetResumeInfoSchema = z.object({
 });
 
 // Schema for node data used in operations
+// Simplified: only task nodes. Branches are inferred from graph structure (fan-out patterns).
 const NodeDataSchema = z.object({
   id: z.string().describe('Unique ID for the node'),
-  type: z.enum(['task', 'decision']).describe('Node type'),
+  type: z.literal('task').describe('Node type (always task - branches are inferred from edges)'),
   title: z.string().describe('Node title'),
   description: z.string().describe('Node description'),
   complexity: z.enum(['low', 'medium', 'high']).optional().describe('Task complexity'),
@@ -113,7 +114,7 @@ const PlanOperationSchema = z.discriminatedUnion('op', [
     node_id: z.string().describe('Node ID to replace'),
     node: z.object({
       id: z.string().optional().describe('New ID (optional)'),
-      type: z.enum(['task', 'decision']).optional(),
+      type: z.literal('task').optional(),
       title: z.string().describe('New title'),
       description: z.string().describe('New description'),
       complexity: z.enum(['low', 'medium', 'high']).optional(),
