@@ -508,17 +508,17 @@ export async function handleGetApproval(projectId?: string): Promise<{
 
     let firstNodeInfo: NextNodeInfo | undefined;
     if (firstNode) {
-      const config = nodeConfigs[firstNode.id] || { fieldValues: {}, attachments: [] };
-      firstNodeInfo = {
-        id: firstNode.id,
-        title: firstNode.title,
-        type: firstNode.type,
-        description: firstNode.description,
-        fieldValues: config.fieldValues || {},
-        attachments: config.attachments || [],
-        metaInstructions: config.metaInstructions,
-        mcpServers: formatMcpServersWithInstructions(config.mcpServers, provider),
-      };
+      // Skip decision nodes - they're just branch selection points, not executable tasks
+      // The user has already selected branches in the UI, so we auto-complete decision nodes
+      // and return the first executable task node instead
+      firstNodeInfo = skipDecisionNode(
+        effectiveProjectId,
+        firstNode,
+        nodes,
+        edges,
+        nodeConfigs,
+        provider
+      ) || undefined;
     }
 
     return {
@@ -683,7 +683,89 @@ export function handleUpdateNodeStatus(
 }
 
 /**
- * Find the next executable node based on edges and branch selections
+ * Skip decision nodes and find the first executable task node.
+ * Decision nodes are branch selection points - they don't need execution.
+ * The user selects the branch in the UI, and we auto-complete the decision node.
+ */
+function skipDecisionNode(
+  projectId: string,
+  node: ReturnType<typeof multiProjectPlanStore.getNodes>[0],
+  nodes: ReturnType<typeof multiProjectPlanStore.getNodes>,
+  edges: ReturnType<typeof multiProjectPlanStore.getEdges>,
+  nodeConfigs: ReturnType<typeof multiProjectPlanStore.getNodeConfigs>,
+  provider: string
+): NextNodeInfo | null {
+  const selectedBranches = multiProjectPlanStore.getSelectedBranches(projectId);
+
+  // If it's not a decision node, return it as the next executable node
+  if (node.type !== 'decision') {
+    const config = nodeConfigs[node.id] || { fieldValues: {}, attachments: [] };
+    return {
+      id: node.id,
+      title: node.title,
+      type: node.type,
+      description: node.description,
+      fieldValues: config.fieldValues || {},
+      attachments: config.attachments || [],
+      metaInstructions: config.metaInstructions,
+      mcpServers: formatMcpServersWithInstructions(config.mcpServers, provider),
+    };
+  }
+
+  // It's a decision node - auto-complete it and find the selected branch's first task
+  console.error(`[Overture] Auto-completing decision node: ${node.id} (${node.title})`);
+
+  // Mark the decision node as completed
+  multiProjectPlanStore.updateNodeStatus(projectId, node.id, 'completed');
+  wsManager.broadcastToProject(projectId, {
+    type: 'node_status_updated',
+    nodeId: node.id,
+    status: 'completed',
+    projectId
+  });
+
+  // Get the selected branch for this decision node
+  const selectedBranchId = selectedBranches[node.id];
+
+  if (!selectedBranchId) {
+    console.error(`[Overture] No branch selected for decision node ${node.id}, skipping to first available path`);
+  }
+
+  // Find edges going out from this decision node
+  const outgoingEdges = edges.filter(e => e.from === node.id);
+
+  // Find the first task node in the selected branch
+  for (const edge of outgoingEdges) {
+    const nextNode = nodes.find(n => n.id === edge.to);
+    if (!nextNode) continue;
+
+    // Check if this node belongs to the selected branch
+    if (nextNode.branchParent === node.id && nextNode.branchId) {
+      if (selectedBranchId && nextNode.branchId !== selectedBranchId) {
+        // This node's branch wasn't selected, skip it
+        continue;
+      }
+    }
+
+    // Found a valid next node - recursively check if it's also a decision node
+    return skipDecisionNode(projectId, nextNode, nodes, edges, nodeConfigs, provider);
+  }
+
+  // No direct branch task found, try to find next node after decision
+  for (const edge of outgoingEdges) {
+    const nextNode = nodes.find(n => n.id === edge.to);
+    if (nextNode) {
+      const result = skipDecisionNode(projectId, nextNode, nodes, edges, nodeConfigs, provider);
+      if (result) return result;
+    }
+  }
+
+  return null;
+}
+
+/**
+ * Find the next executable node based on edges and branch selections.
+ * Automatically skips decision nodes (they're just branch selection points).
  */
 function findNextNode(
   projectId: string,
@@ -717,19 +799,8 @@ function findNextNode(
       }
     }
 
-    // Found a valid next node - get its config
-    const config = nodeConfigs[nextNode.id] || { fieldValues: {}, attachments: [] };
-
-    return {
-      id: nextNode.id,
-      title: nextNode.title,
-      type: nextNode.type,
-      description: nextNode.description,
-      fieldValues: config.fieldValues || {},
-      attachments: config.attachments || [],
-      metaInstructions: config.metaInstructions,
-      mcpServers: formatMcpServersWithInstructions(config.mcpServers, provider),
-    };
+    // Found a valid next node - check if it's a decision node and skip if so
+    return skipDecisionNode(projectId, nextNode, nodes, edges, nodeConfigs, provider);
   }
 
   // No valid next node found (all branches were skipped)
@@ -810,22 +881,21 @@ export async function handleCheckRerun(
 
   // Get the node info for the rerun start node
   const nodes = multiProjectPlanStore.getNodes(effectiveProjectId);
+  const edges = multiProjectPlanStore.getEdges(effectiveProjectId);
   const nodeConfigs = multiProjectPlanStore.getNodeConfigs(effectiveProjectId);
   const startNode = nodes.find(n => n.id === rerunRequest.nodeId);
 
   let nodeInfo: NextNodeInfo | undefined;
   if (startNode) {
-    const config = nodeConfigs[startNode.id] || { fieldValues: {}, attachments: [] };
-    nodeInfo = {
-      id: startNode.id,
-      title: startNode.title,
-      type: startNode.type,
-      description: startNode.description,
-      fieldValues: config.fieldValues || {},
-      attachments: config.attachments || [],
-      metaInstructions: config.metaInstructions,
-      mcpServers: formatMcpServersWithInstructions(config.mcpServers, provider),
-    };
+    // Skip decision nodes - they're just branch selection points, not executable tasks
+    nodeInfo = skipDecisionNode(
+      effectiveProjectId,
+      startNode,
+      nodes,
+      edges,
+      nodeConfigs,
+      provider
+    ) || undefined;
   }
 
   return {
