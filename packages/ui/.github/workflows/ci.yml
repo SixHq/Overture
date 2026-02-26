@@ -1,0 +1,70 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build:
+    name: Build & Lint
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [18, 20, 22]
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Lint MCP Server
+        run: npm run lint -w overture-mcp
+
+      - name: Lint UI
+        run: npm run lint -w @overture/ui
+
+      - name: Build MCP Server
+        run: npm run build -w overture-mcp
+
+      - name: Build UI
+        run: npm run build -w @overture/ui
+
+      - name: Verify build artifacts exist
+        run: |
+          test -f packages/mcp-server/dist/index.js || exit 1
+          test -f packages/ui/dist/index.html || exit 1
+          echo "✓ All build artifacts verified"
+
+  typecheck:
+    name: Type Check
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Type check MCP Server
+        run: npx tsc --noEmit --project packages/mcp-server/tsconfig.json
+
+      - name: Type check UI
+        run: npx tsc --noEmit --project packages/ui/tsconfig.json

@@ -1,0 +1,40 @@
+{
+  "name": "overture",
+  "version": "0.1.0",
+  "description": "Agent Plan Visualizer - An Open-Source MCP Server by Sixth",
+  "private": true,
+  "type": "module",
+  "workspaces": [
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "npm run dev:server & npm run dev:ui",
+    "build": "npm run build:server && npm run build:ui",
+    "dev:server": "npm run dev --workspace=@overture/mcp-server",
+    "dev:ui": "npm run dev --workspace=@overture/ui",
+    "build:server": "npm run build --workspace=@overture/mcp-server",
+    "build:ui": "npm run build --workspace=@overture/ui",
+    "start": "npm run start --workspace=@overture/mcp-server",
+    "clean": "rm -rf node_modules packages/*/node_modules packages/*/dist"
+  },
+  "keywords": [
+    "mcp",
+    "ai",
+    "agent",
+    "visualization",
+    "planning",
+    "claude",
+    "cursor",
+    "cline"
+  ],
+  "author": "Sixth",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/sixth/overture"
+  },
+  "homepage": "https://github.com/sixth/overture#readme",
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

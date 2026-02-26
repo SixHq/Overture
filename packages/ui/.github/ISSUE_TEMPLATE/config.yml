@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Question or Discussion
+    url: https://github.com/SixHq/Overture/discussions
+    about: Ask questions or start a discussion with the community
+  - name: Documentation
+    url: https://github.com/SixHq/Overture#readme
+    about: Read the documentation before opening an issue

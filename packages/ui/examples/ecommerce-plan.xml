@@ -1,0 +1,316 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plan id="plan_ecommerce" title="Build E-commerce Store with Stripe" agent="claude-code">
+  <nodes>
+    <!-- Phase 1: Project Setup -->
+    <node id="n1" type="task" status="pending">
+      <title>Initialize Next.js Project</title>
+      <description>Create a new Next.js 14 application with App Router, TypeScript, and Tailwind CSS. This will be the foundation of our e-commerce store.</description>
+      <complexity>low</complexity>
+      <expected_output>New Next.js project scaffolded in ./ecommerce-store directory with all dependencies installed</expected_output>
+      <risks>None significant</risks>
+
+      <dynamic_field
+        id="f1"
+        name="project_name"
+        type="string"
+        required="true"
+        title="Project Name"
+        description="Name for the project directory"
+        value="ecommerce-store"
+      />
+    </node>
+
+    <node id="n2" type="task" status="pending">
+      <title>Install Core Dependencies</title>
+      <description>Install essential packages: stripe for payments, zustand for state management, lucide-react for icons, and zod for validation.</description>
+      <complexity>low</complexity>
+      <expected_output>All npm packages installed and ready to use</expected_output>
+      <risks>Version conflicts are possible but unlikely with modern packages</risks>
+    </node>
+
+    <!-- Phase 2: Database Decision -->
+    <node id="n3" type="decision" status="pending">
+      <title>Choose Database Solution</title>
+      <description>Select the database technology for storing products, orders, and user data</description>
+
+      <branch id="b1" label="Prisma + PostgreSQL">
+        <description>Full-featured ORM with PostgreSQL database</description>
+        <pros>Type-safe queries, migrations, excellent DX, scales well</pros>
+        <cons>Requires PostgreSQL setup, slightly more complex</cons>
+      </branch>
+
+      <branch id="b2" label="Drizzle + SQLite">
+        <description>Lightweight ORM with file-based SQLite</description>
+        <pros>Zero config, great for prototypes, fast local dev</pros>
+        <cons>Not ideal for production scale</cons>
+      </branch>
+
+      <branch id="b3" label="Supabase">
+        <description>Managed PostgreSQL with real-time subscriptions</description>
+        <pros>Managed service, real-time features, auth built-in</pros>
+        <cons>External dependency, costs at scale</cons>
+      </branch>
+    </node>
+
+    <!-- Prisma branch tasks -->
+    <node id="n4" type="task" status="pending" branch_parent="n3" branch_id="b1">
+      <title>Set up Prisma with PostgreSQL</title>
+      <description>Initialize Prisma, configure connection, and create initial schema for products, users, and orders</description>
+      <complexity>medium</complexity>
+      <expected_output>Prisma configured with schema.prisma file</expected_output>
+
+      <dynamic_field
+        id="f2"
+        name="database_url"
+        type="secret"
+        required="true"
+        title="Database URL"
+        description="PostgreSQL connection string"
+        setup_instructions="Format: postgresql://user:password@host:5432/database"
+      />
+    </node>
+
+    <!-- Drizzle branch tasks -->
+    <node id="n5" type="task" status="pending" branch_parent="n3" branch_id="b2">
+      <title>Set up Drizzle with SQLite</title>
+      <description>Initialize Drizzle ORM with SQLite, create schema for products, users, and orders</description>
+      <complexity>low</complexity>
+      <expected_output>Drizzle configured with local SQLite database</expected_output>
+    </node>
+
+    <!-- Supabase branch tasks -->
+    <node id="n6" type="task" status="pending" branch_parent="n3" branch_id="b3">
+      <title>Configure Supabase Connection</title>
+      <description>Set up Supabase client, configure authentication, and create database tables</description>
+      <complexity>medium</complexity>
+
+      <dynamic_field
+        id="f3"
+        name="supabase_url"
+        type="string"
+        required="true"
+        title="Supabase URL"
+        description="Your Supabase project URL"
+        setup_instructions="Find at app.supabase.com → Project Settings → API"
+      />
+      <dynamic_field
+        id="f4"
+        name="supabase_anon_key"
+        type="secret"
+        required="true"
+        title="Supabase Anon Key"
+        description="Public anonymous key"
+        setup_instructions="Find at app.supabase.com → Project Settings → API"
+      />
+    </node>
+
+    <!-- Phase 3: Core Features -->
+    <node id="n7" type="task" status="pending">
+      <title>Create Product Schema and Seed Data</title>
+      <description>Define the product model with fields: id, name, description, price, image, category, inventory. Create seed script with sample products.</description>
+      <complexity>medium</complexity>
+      <expected_output>Product table with 10 sample products seeded</expected_output>
+      <risks>Image URLs need to be valid and accessible</risks>
+    </node>
+
+    <node id="n8" type="task" status="pending">
+      <title>Build Product Listing Page</title>
+      <description>Create the main product grid showing all products with images, names, and prices. Include category filtering and sorting options.</description>
+      <complexity>medium</complexity>
+      <expected_output>Responsive product grid at /products</expected_output>
+    </node>
+
+    <node id="n9" type="task" status="pending">
+      <title>Build Product Detail Page</title>
+      <description>Create individual product pages with full description, multiple images, size/variant selection, and add-to-cart button.</description>
+      <complexity>medium</complexity>
+      <expected_output>Dynamic product pages at /products/[id]</expected_output>
+    </node>
+
+    <node id="n10" type="task" status="pending">
+      <title>Implement Shopping Cart</title>
+      <description>Create a persistent shopping cart using Zustand with localStorage. Include add, remove, update quantity, and clear cart functionality.</description>
+      <complexity>medium</complexity>
+      <expected_output>Working cart with slide-out drawer UI</expected_output>
+    </node>
+
+    <!-- Phase 4: Stripe Integration -->
+    <node id="n11" type="task" status="pending">
+      <title>Configure Stripe</title>
+      <description>Set up Stripe client, configure API keys, and create webhook endpoint for payment events.</description>
+      <complexity>medium</complexity>
+      <expected_output>Stripe SDK configured and webhook handler ready</expected_output>
+
+      <dynamic_field
+        id="f5"
+        name="stripe_secret_key"
+        type="secret"
+        required="true"
+        title="Stripe Secret Key"
+        description="Your Stripe secret API key"
+        setup_instructions="Get from dashboard.stripe.com → Developers → API keys"
+      />
+      <dynamic_field
+        id="f6"
+        name="stripe_publishable_key"
+        type="string"
+        required="true"
+        title="Stripe Publishable Key"
+        description="Your Stripe publishable key (starts with pk_)"
+        setup_instructions="Get from dashboard.stripe.com → Developers → API keys"
+      />
+      <dynamic_field
+        id="f7"
+        name="stripe_webhook_secret"
+        type="secret"
+        required="false"
+        title="Stripe Webhook Secret"
+        description="Webhook signing secret (optional for local dev)"
+        setup_instructions="Get when setting up webhooks in Stripe dashboard"
+      />
+    </node>
+
+    <node id="n12" type="task" status="pending">
+      <title>Build Checkout Flow</title>
+      <description>Create checkout page with shipping form, integrate Stripe Elements for payment, and handle successful/failed payments.</description>
+      <complexity>high</complexity>
+      <expected_output>Complete checkout flow with Stripe payment form</expected_output>
+      <risks>Payment integration requires careful error handling</risks>
+    </node>
+
+    <node id="n13" type="task" status="pending">
+      <title>Create Order Confirmation</title>
+      <description>Build order success page showing order details, estimated delivery, and confirmation email trigger.</description>
+      <complexity>low</complexity>
+      <expected_output>Order confirmation page at /order/[id]/success</expected_output>
+    </node>
+
+    <!-- Phase 5: Authentication Decision -->
+    <node id="n14" type="decision" status="pending">
+      <title>Choose Authentication Method</title>
+      <description>Select how customers will sign in to the store</description>
+
+      <branch id="b4" label="NextAuth.js">
+        <description>Flexible auth with OAuth and credentials</description>
+        <pros>Multiple providers, session management, widely used</pros>
+        <cons>Configuration can be complex</cons>
+      </branch>
+
+      <branch id="b5" label="Clerk">
+        <description>Managed authentication service</description>
+        <pros>Beautiful UI, easy setup, user management dashboard</pros>
+        <cons>External service, costs at scale</cons>
+      </branch>
+
+      <branch id="b6" label="Guest Checkout Only">
+        <description>No authentication required</description>
+        <pros>Simplest implementation, no friction</pros>
+        <cons>No order history, no saved carts</cons>
+      </branch>
+    </node>
+
+    <node id="n15" type="task" status="pending" branch_parent="n14" branch_id="b4">
+      <title>Set up NextAuth.js</title>
+      <description>Configure NextAuth with Google OAuth and email/password credentials. Create login and register pages.</description>
+      <complexity>medium</complexity>
+
+      <dynamic_field
+        id="f8"
+        name="google_client_id"
+        type="string"
+        required="true"
+        title="Google OAuth Client ID"
+        description="Google OAuth 2.0 client ID"
+        setup_instructions="Create at console.cloud.google.com → APIs → Credentials"
+      />
+      <dynamic_field
+        id="f9"
+        name="google_client_secret"
+        type="secret"
+        required="true"
+        title="Google OAuth Secret"
+        description="Google OAuth 2.0 client secret"
+      />
+    </node>
+
+    <node id="n16" type="task" status="pending" branch_parent="n14" branch_id="b5">
+      <title>Integrate Clerk</title>
+      <description>Set up Clerk provider, create sign-in/sign-up components, and configure middleware for protected routes.</description>
+      <complexity>low</complexity>
+
+      <dynamic_field
+        id="f10"
+        name="clerk_publishable_key"
+        type="string"
+        required="true"
+        title="Clerk Publishable Key"
+        description="Your Clerk publishable key"
+        setup_instructions="Get from dashboard.clerk.com → API Keys"
+      />
+      <dynamic_field
+        id="f11"
+        name="clerk_secret_key"
+        type="secret"
+        required="true"
+        title="Clerk Secret Key"
+        description="Your Clerk secret key"
+      />
+    </node>
+
+    <!-- Phase 6: Final Polish -->
+    <node id="n17" type="task" status="pending">
+      <title>Add Loading States and Error Handling</title>
+      <description>Implement skeleton loaders for all pages, toast notifications for actions, and error boundaries for graceful failure handling.</description>
+      <complexity>medium</complexity>
+      <expected_output>Polished UX with proper feedback for all states</expected_output>
+    </node>
+
+    <node id="n18" type="task" status="pending">
+      <title>Implement SEO and Metadata</title>
+      <description>Add dynamic meta tags for all pages, Open Graph images for social sharing, and structured data for products.</description>
+      <complexity>low</complexity>
+      <expected_output>SEO-optimized pages with proper meta tags</expected_output>
+    </node>
+
+    <node id="n19" type="task" status="pending">
+      <title>Performance Optimization</title>
+      <description>Optimize images with next/image, implement lazy loading, add caching headers, and run Lighthouse audit.</description>
+      <complexity>medium</complexity>
+      <expected_output>Lighthouse score above 90</expected_output>
+    </node>
+
+    <node id="n20" type="task" status="pending">
+      <title>Deploy to Vercel</title>
+      <description>Configure environment variables, deploy to Vercel, set up custom domain, and configure Stripe webhook endpoint.</description>
+      <complexity>low</complexity>
+      <expected_output>Live production deployment</expected_output>
+
+      <dynamic_field
+        id="f12"
+        name="domain"
+        type="string"
+        required="false"
+        title="Custom Domain"
+        description="Optional custom domain for the store"
+        value=""
+      />
+    </node>
+  </nodes>
+
+  <edges>
+    <edge id="e1" from="n1" to="n2" />
+    <edge id="e2" from="n2" to="n3" />
+    <edge id="e3" from="n3" to="n7" />
+    <edge id="e4" from="n7" to="n8" />
+    <edge id="e5" from="n8" to="n9" />
+    <edge id="e6" from="n9" to="n10" />
+    <edge id="e7" from="n10" to="n11" />
+    <edge id="e8" from="n11" to="n12" />
+    <edge id="e9" from="n12" to="n13" />
+    <edge id="e10" from="n13" to="n14" />
+    <edge id="e11" from="n14" to="n17" />
+    <edge id="e12" from="n17" to="n18" />
+    <edge id="e13" from="n18" to="n19" />
+    <edge id="e14" from="n19" to="n20" />
+  </edges>
+</plan>
