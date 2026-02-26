@@ -38,7 +38,7 @@ For every task you receive, your plan must include:
 
 1. **Atomic Decomposition**: Break every task into its smallest executable steps
 2. **Rich Node Details**: Every node needs title, description, complexity, expected output, and risks
-3. **Decision Points**: Use `decision` nodes whenever multiple valid approaches exist
+3. **Branch Points**: When multiple valid approaches exist, create nodes for each option and use edges to create a branch point (one node with multiple outgoing edges)
 4. **Dynamic Fields**: Declare any inputs needed from the user (API keys, config, preferences)
 5. **Logical Dependencies**: Edges should reflect true execution order
 
@@ -225,31 +225,6 @@ If the user asks for something completely unrelated to the current plan (e.g., "
         setup_instructions="How to obtain this value (e.g., 'Get from dashboard.stripe.com')"
       />
     </node>
-
-    <!-- Decision node when multiple approaches are valid -->
-    <node id="n2" type="decision" status="pending">
-      <title>What decision needs to be made</title>
-      <description>Context for why this choice matters</description>
-
-      <branch id="b1" label="Option 1 Name">
-        <description>What this approach entails</description>
-        <pros>Advantages of this choice</pros>
-        <cons>Disadvantages or tradeoffs</cons>
-      </branch>
-
-      <branch id="b2" label="Option 2 Name">
-        <description>What this approach entails</description>
-        <pros>Advantages of this choice</pros>
-        <cons>Disadvantages or tradeoffs</cons>
-      </branch>
-    </node>
-
-    <!-- Task that only runs if a specific branch is chosen -->
-    <node id="n3" type="task" status="pending" branch_parent="n2" branch_id="b1">
-      <title>Task specific to Option 1</title>
-      <description>This only executes if the user selects Option 1</description>
-      <complexity>medium</complexity>
-    </node>
   </nodes>
 
   <edges>
@@ -261,63 +236,110 @@ If the user asks for something completely unrelated to the current plan (e.g., "
 
 ---
 
-## Branching Rules (CRITICAL FOR UI RENDERING)
+## Creating Branches (Simplified Approach)
 
-When you create decision nodes with branches, you **MUST** follow these rules for the UI to render correctly:
+Branches are automatically detected from graph structure. **No explicit decision nodes needed.**
 
-### Rule 1: Every branch needs follow-up tasks
-For EACH branch option in a decision node, create at least one task node that is linked to that specific branch.
+When a node has **multiple outgoing edges**, it becomes a branch point, and the UI will:
+1. Render the branching options visually
+2. Let the user select which branch to follow
+3. Only execute the selected branch path
 
-### Rule 2: Use branch_parent and branch_id attributes
-Tasks that belong to a specific branch MUST have both attributes:
+### Rule 1: Create branches with multiple outgoing edges
+To create a branch point, simply create edges from one node to multiple target nodes:
+
 ```xml
-<node id="n3" type="task" branch_parent="n2" branch_id="b1">
-```
-- `branch_parent`: The ID of the decision node (e.g., "n2")
-- `branch_id`: The ID of the specific branch this task belongs to (e.g., "b1")
-
-### Rule 3: Create parallel branch paths
-If a decision has 3 branches (b1, b2, b3), you need tasks for each:
-```xml
-<!-- Decision node -->
-<node id="n2" type="decision">
-  <branch id="b1" label="Option A">...</branch>
-  <branch id="b2" label="Option B">...</branch>
-  <branch id="b3" label="Option C">...</branch>
+<!-- n2 becomes a branch point because it has multiple outgoing edges -->
+<node id="n2" type="task" status="pending">
+  <title>Install dependencies</title>
+  <description>Base setup complete, ready for styling choice</description>
 </node>
 
-<!-- Tasks for branch b1 (Option A) -->
-<node id="n3" type="task" branch_parent="n2" branch_id="b1">
-  <title>Implement Option A</title>
+<!-- Option A: Tailwind -->
+<node id="tailwind" type="task" status="pending">
+  <title>Set up Tailwind CSS</title>
+  <description>Utility-first CSS framework for rapid development</description>
 </node>
 
-<!-- Tasks for branch b2 (Option B) -->
-<node id="n4" type="task" branch_parent="n2" branch_id="b2">
-  <title>Implement Option B</title>
+<!-- Option B: CSS Modules -->
+<node id="css-modules" type="task" status="pending">
+  <title>Set up CSS Modules</title>
+  <description>Scoped CSS with traditional approach</description>
 </node>
 
-<!-- Tasks for branch b3 (Option C) -->
-<node id="n5" type="task" branch_parent="n2" branch_id="b3">
-  <title>Implement Option C</title>
-</node>
-
-<!-- Edges connect decision to ALL branch tasks -->
-<edge from="n2" to="n3" />
-<edge from="n2" to="n4" />
-<edge from="n2" to="n5" />
+<!-- These edges create the branch point at n2 -->
+<edge from="n2" to="tailwind" />
+<edge from="n2" to="css-modules" />
 ```
 
-### Rule 4: Branches can converge
+### Rule 2: Branches can converge
 After branch-specific tasks, you can have a common task that all branches lead to:
+
 ```xml
 <!-- Common task after all branches -->
-<node id="n6" type="task">
-  <title>Continue with shared step</title>
+<node id="components" type="task">
+  <title>Build UI components</title>
+  <description>Create components using the chosen styling approach</description>
 </node>
 
-<edge from="n3" to="n6" />
-<edge from="n4" to="n6" />
-<edge from="n5" to="n6" />
+<!-- Both branches converge here -->
+<edge from="tailwind" to="components" />
+<edge from="css-modules" to="components" />
+```
+
+### Rule 3: Multiple branches are supported
+You can have 2, 3, or more branches from a single node:
+
+```xml
+<!-- n1 branches to three options -->
+<edge from="n1" to="option-a" />
+<edge from="n1" to="option-b" />
+<edge from="n1" to="option-c" />
+```
+
+### Complete Branch Example
+
+```xml
+<plan id="plan_db" title="Database Setup" agent="sixth">
+  <nodes>
+    <node id="setup" type="task" status="pending">
+      <title>Initialize Project</title>
+      <description>Create base project structure</description>
+    </node>
+
+    <node id="postgres" type="task" status="pending">
+      <title>Set up PostgreSQL</title>
+      <description>Configure PostgreSQL with Prisma ORM</description>
+    </node>
+
+    <node id="mongodb" type="task" status="pending">
+      <title>Set up MongoDB</title>
+      <description>Configure MongoDB with Mongoose ODM</description>
+    </node>
+
+    <node id="sqlite" type="task" status="pending">
+      <title>Set up SQLite</title>
+      <description>Configure SQLite for local development</description>
+    </node>
+
+    <node id="models" type="task" status="pending">
+      <title>Create Data Models</title>
+      <description>Define schemas using the chosen database</description>
+    </node>
+  </nodes>
+
+  <edges>
+    <!-- setup branches to 3 database options -->
+    <edge from="setup" to="postgres" />
+    <edge from="setup" to="mongodb" />
+    <edge from="setup" to="sqlite" />
+
+    <!-- all branches converge to models -->
+    <edge from="postgres" to="models" />
+    <edge from="mongodb" to="models" />
+    <edge from="sqlite" to="models" />
+  </edges>
+</plan>
 ```
 
 ---
@@ -721,7 +743,7 @@ Users attach MCP servers because they want specific capabilities for specific no
 ## Best Practices
 
 1. **Over-plan, don't under-plan**: More nodes = more transparency = happier user
-2. **Use decision nodes liberally**: Don't assume — let the user choose
+2. **Create branch points when needed**: When multiple approaches are valid, create separate task nodes for each option and use edges to create a branch point
 3. **Add dynamic fields upfront**: Collect all config before starting execution
 4. **Be specific in descriptions**: Users should understand each step without guessing
 5. **Include risks**: Show you've thought about edge cases
