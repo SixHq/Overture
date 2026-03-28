@@ -92,7 +92,7 @@ export interface Plan {
   createdAt: string;
   status: 'streaming' | 'ready' | 'approved' | 'executing' | 'paused' | 'completed' | 'failed';
   model?: string;      // e.g., 'claude-3-opus', 'gpt-4', 'claude-sonnet-4-20250514'
-  provider?: string;   // e.g., 'anthropic', 'openai', 'google'
+  provider?: string;   // e.g., 'anthropic', 'openai', 'google', 'minimax'
 }
 
 export interface NodeConfig {

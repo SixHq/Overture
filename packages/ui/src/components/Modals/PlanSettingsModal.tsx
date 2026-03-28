@@ -9,7 +9,8 @@ const PROVIDERS = [
   { id: 'anthropic', name: 'Anthropic', icon: 'A' },
   { id: 'openai', name: 'OpenAI', icon: 'O' },
   { id: 'google', name: 'Google', icon: 'G' },
-  { id: 'mistral', name: 'Mistral', icon: 'M' },
+  { id: 'minimax', name: 'MiniMax', icon: 'M' },
+  { id: 'mistral', name: 'Mistral', icon: 'Mi' },
   { id: 'cohere', name: 'Cohere', icon: 'C' },
   { id: 'other', name: 'Other', icon: '?' },
 ] as const;
@@ -38,6 +39,12 @@ const MODELS_BY_PROVIDER: Record<string, string[]> = {
     'gemini-1.5-pro',
     'gemini-1.5-flash',
     'gemini-1.0-pro',
+  ],
+  minimax: [
+    'MiniMax-M2.7',
+    'MiniMax-M2.7-highspeed',
+    'MiniMax-M2.5',
+    'MiniMax-M2.5-highspeed',
   ],
   mistral: [
     'mistral-large',
