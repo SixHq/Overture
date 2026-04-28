@@ -1,3 +1,5 @@
+[![MseeP.ai Security Assessment Badge](https://mseep.net/pr/sixhq-overture-badge.png)](https://mseep.ai/app/sixhq-overture)
+
 <p align="center">
   <picture>
     <source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/SixHq/Overture/main/assets/overture-logo-dark.png">
