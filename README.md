@@ -24,6 +24,7 @@
   <a href="#-features">Features</a> •
   <a href="#-mcp-marketplace">Marketplace</a> •
   <a href="#-configuration">Config</a> •
+  <a href="#-faq">FAQ</a> •
   <a href="https://github.com/SixHq/Overture/discussions">Discussions</a>
 </p>
 
@@ -79,610 +80,159 @@ Some agents show plans as text in chat. But text fails to show:
 
 ## ✨ The Solution
 
-**Overture** intercepts your AI agent's planning phase and renders it as an **interactive visual flowchart** — before any code is written.
+Overture changes this with a **visual plan-first workflow**:
 
-<p align="center">
-  <img src="https://raw.githubusercontent.com/SixHq/Overture/main/assets/solution-screenshot.png" alt="Overture Solution" width="900">
-</p>
+1. **Plan** — Overture generates a visual execution plan as a flowchart
+2. **Approve** — You review, modify, and approve the plan before any code is written
+3. **Execute** — Watch each step execute in real-time, with full visibility
 
-### The agent doesn't write a single line of code until you approve the plan.
+### Why Visual Plans?
 
-<br>
-
-<table>
-<tr>
-<td align="center" width="20%">
-<img src="https://img.icons8.com/color/96/flow-chart.png" width="64"><br>
-<strong>Visual Plans</strong><br>
-<sub>Interactive flowchart with pan, zoom, and click-through navigation</sub>
-</td>
-<td align="center" width="20%">
-<img src="https://img.icons8.com/color/96/attach.png" width="64"><br>
-<strong>Attach Context</strong><br>
-<sub>Files, API keys, instructions per step</sub>
-</td>
-<td align="center" width="20%">
-<img src="https://img.icons8.com/color/96/split.png" width="64"><br>
-<strong>Choose Approaches</strong><br>
-<sub>Compare pros/cons of different paths</sub>
-</td>
-<td align="center" width="20%">
-<img src="https://img.icons8.com/color/96/lightning-bolt.png" width="64"><br>
-<strong>Real-time Execution</strong><br>
-<sub>Watch nodes light up with progress</sub>
-</td>
-<td align="center" width="20%">
-<img src="https://img.icons8.com/color/96/shop.png" width="64"><br>
-<strong>MCP Marketplace</strong><br>
-<sub>Browse & attach tools per node</sub>
-</td>
-</tr>
-</table>
+| Text Plans | Visual Plans (Overture) |
+|------------|-------------------------|
+| ❌ Linear only | ✅ Shows dependencies and branch points |
+| ❌ No progress tracking | ✅ Real-time step execution status |
+| ❌ No context visibility | ✅ Files, APIs, secrets clearly marked |
+| ❌ No complexity indication | ✅ Node size/color shows risk level |
+| ❌ Hard to modify | ✅ Drag nodes, add/delete steps |
 
 ---
 
-## 🚀 Installation
+## 📦 Installation
 
-Overture is an MCP server that works with **any MCP-compatible AI coding agent**. One command to install.
+### Via MCP Marketplace (Recommended)
 
-### Claude Code
+The easiest way to get started is through the built-in MCP marketplace in your AI coding tool:
 
-```bash
-claude mcp add overture-mcp -- npx overture-mcp
-```
+1. Open your AI coding tool (Cursor, Claude Code, VS Code with Sixth, etc.)
+2. Navigate to MCP settings/extensions
+3. Find **Overture** in the marketplace
+4. Click **Install**
 
-### Cursor
-
-Add to `~/.cursor/mcp.json`:
-
-```json
-{
-  "mcpServers": {
-    "overture": {
-      "command": "npx",
-      "args": ["overture-mcp"]
-    }
-  }
-}
-```
-
-<details>
-<summary><strong>More Agents (Cline, Copilot, Sixth AI)</strong></summary>
-
-### Cline (VS Code Extension)
-
-Open VS Code settings → search "Cline MCP" → add:
-
-```json
-{
-  "mcpServers": {
-    "overture": {
-      "command": "npx",
-      "args": ["overture-mcp"]
-    }
-  }
-}
-```
-
-### GitHub Copilot
-
-Create `.vscode/mcp.json` in your project root:
-
-```json
-{
-  "servers": {
-    "overture": {
-      "command": "npx",
-      "args": ["overture-mcp"]
-    }
-  }
-}
-```
-
-> **Note:** GitHub Copilot MCP requires VS Code 1.99+ and uses `servers` instead of `mcpServers`.
-
-### Sixth AI (VS Code Extension)
-
-Add to your Sixth AI MCP settings file:
-
-| Platform | Path |
-|----------|------|
-| macOS | `~/Library/Application Support/Code/User/globalStorage/sixth.sixth-ai/settings/sixth-mcp-settings.json` |
-| Windows | `%APPDATA%\Code\User\globalStorage\sixth.sixth-ai\settings\sixth-mcp-settings.json` |
-| Linux | `~/.config/Code/User/globalStorage/sixth.sixth-ai/settings/sixth-mcp-settings.json` |
-
-```json
-{
-  "mcpServers": {
-    "overture": {
-      "command": "npx",
-      "args": ["overture-mcp"],
-      "disabled": false
-    }
-  }
-}
-```
-
-</details>
-
-### Global Installation (Optional)
+### Manual Installation
 
 ```bash
 npm install -g overture-mcp
 ```
 
-### Verify It Works
-
-Give your agent any task. Overture automatically opens at `http://localhost:3031` with your plan ready for approval.
-
----
-
-## 🎯 How It Works
-
-<p align="center">
-  <img src="https://raw.githubusercontent.com/SixHq/Overture/main/assets/how-it-works.png" alt="How Overture Works" width="800">
-</p>
-
-**The Flow:**
-
-| Step | What Happens |
-|------|--------------|
-| **1. Prompt** | You give your agent a task: "Build a REST API with auth" |
-| **2. Plan** | Agent generates a detailed plan with steps, branches, and requirements |
-| **3. Visualize** | Overture renders the plan as an interactive graph |
-| **4. Enrich** | You click nodes, attach files, select branches, fill in API keys |
-| **5. Approve** | You click "Approve & Execute" (or press Enter) |
-| **6. Execute** | Watch real-time as nodes pulse, complete, or fail |
-| **7. Control** | Pause (Spacebar), resume, re-run nodes, or modify the plan mid-flight |
-
----
-
-## 🛠 Features
-
-### Interactive Plan Canvas
-
-<p align="center">
-  <img src="https://raw.githubusercontent.com/SixHq/Overture/main/assets/feature-canvas.png" alt="Interactive Canvas" width="800">
-</p>
-
-| Feature | Description |
-|---------|-------------|
-| **React Flow Canvas** | Full pan, zoom, drag with smooth animations |
-| **Streaming Parser** | Plan nodes appear in real-time as the agent generates them |
-| **Dagre Auto-Layout** | Intelligent automatic positioning of nodes |
-| **Visual Status** | Pending (gray) → Active (pulsing yellow) → Completed (green) / Failed (red) |
-| **Next Node Indicator** | Blue pulse shows which node executes next |
-| **Complexity Badges** | Low (green), Medium (yellow), High (red) at a glance |
-| **Glow Effects** | Shadow glows highlight active and upcoming nodes |
-| **Insertable Edges** | Hover over edges to insert new nodes mid-plan |
-
----
-
-### Node Details Panel
-
-<p align="center">
-  <img src="https://raw.githubusercontent.com/SixHq/Overture/main/assets/feature-node-panel.png" alt="Node Details Panel" width="700">
-</p>
-
-Click any node to reveal its full details:
-
-| Info | What You See |
-|------|--------------|
-| **Title & Description** | Full context for what this step does |
-| **Complexity Level** | Low / Medium / High with visual indicator |
-| **Expected Output** | What the step should produce |
-| **Risks & Edge Cases** | Potential issues to watch for |
-| **Pros & Cons** | For branch options, compare trade-offs |
-
----
-
-### Dynamic Fields (User Inputs)
-
-<p align="center">
-  <img src="https://raw.githubusercontent.com/SixHq/Overture/main/assets/feature-dynamic-fields.png" alt="Dynamic Fields" width="600">
-</p>
-
-Nodes can request input from you before execution:
-
-| Field Type | Use Case |
-|------------|----------|
-| **String** | Project names, URLs, custom values |
-| **Number** | Port numbers, limits, counts |
-| **Boolean** | Yes/No toggles for options |
-| **Select** | Dropdown with predefined choices |
-| **Secret** | API keys, tokens (masked input) |
-| **File** | File paths to attach context |
-
-Each field includes:
-- Required/optional indicator
-- Default values
-- Help text & descriptions
-- Setup instructions ("How to get an API key")
-
----
-
-### File Attachments
-
-<p align="center">
-  <img src="https://raw.githubusercontent.com/SixHq/Overture/main/assets/feature-attachments.png" alt="File Attachments" width="600">
-</p>
-
-Attach context files to specific nodes:
-
-- **Automatic type detection** — Image, code, document, or other
-- **Visual icons** per file type
-- **Descriptions** — add notes about why this file matters
-- **Delete** — remove unwanted attachments
-
----
-
-### Meta Instructions
-
-<p align="center">
-  <img src="https://raw.githubusercontent.com/SixHq/Overture/main/assets/feature-meta-instructions.png" alt="Meta Instructions" width="600">
-</p>
-
-Add custom LLM instructions to any node:
-
-> "Pay special attention to error handling here"
-> "Use the existing auth pattern from src/auth.ts"
-> "Make sure to add tests for edge cases"
-
-Instructions are sent to the agent right before that node executes.
-
----
-
-### Branch Detection & Selection
-
-<p align="center">
-  <img src="https://raw.githubusercontent.com/SixHq/Overture/main/assets/feature-branching.png" alt="Branch Selection" width="800">
-</p>
-
-When the agent proposes multiple approaches:
-
-| Feature | Description |
-|---------|-------------|
-| **Auto-Detection** | Branches detected from graph structure (no special markup) |
-| **Branch Points** | Nodes with multiple outgoing edges become decision points |
-| **Selection Modal** | Side-by-side comparison with pros/cons |
-| **Complexity Comparison** | See difficulty level for each option |
-| **Visual Indicator** | Selected branch highlighted on canvas |
-| **Skip Unselected** | Only your chosen path executes |
-
----
-
-### Requirements Checklist
-
-<p align="center">
-  <img src="https://raw.githubusercontent.com/SixHq/Overture/main/assets/feature-checklist.png" alt="Requirements Checklist" width="400">
-</p>
-
-Before you can approve, Overture shows what's needed:
-
-- **Empty required fields** — counted per node
-- **Branch selections** — which decisions are pending
-- **Progress indicator** — visual completion tracking
-- **Expandable items** — click to see details
-- **Color coding** — Green (done) / Orange (pending)
-
-The Approve button stays disabled until all requirements are met.
-
----
-
-### Execution Controls
-
-<p align="center">
-  <img src="https://raw.githubusercontent.com/SixHq/Overture/main/assets/feature-execution.png" alt="Execution Controls" width="700">
-</p>
-
-| Control | How |
-|---------|-----|
-| **Approve** | Click button or press `Enter` |
-| **Pause** | Press `Spacebar` mid-execution |
-| **Resume** | Press `Spacebar` again |
-| **Re-run Node** | Click failed node → "Re-run" |
-| **Re-run From Here** | Re-execute from any node to the end |
-
-The approval button is smart:
-- 🟢 **"Approve & Execute"** — plan ready, requirements met
-- 🟠 **"Complete Requirements"** — conditions unmet
-- 🔵 **"Executing..."** — running with spinner
-- 🟢 **"Completed"** — all done
-- 🔴 **"Failed"** — error occurred
-
----
-
-### Structured Output
-
-<p align="center">
-  <img src="https://raw.githubusercontent.com/SixHq/Overture/main/assets/feature-output.png" alt="Structured Output" width="700">
-</p>
-
-After each node executes, see rich structured output:
-
-| Category | What It Shows |
-|----------|---------------|
-| **Overview** | Summary of what was accomplished |
-| **Files Changed** | Paths, lines added/removed, diffs |
-| **Files Created** | New files with line counts |
-| **Files Deleted** | Removed files |
-| **Packages Installed** | npm packages with versions |
-| **MCP Servers Setup** | Installation status (installed/configured/failed) |
-| **Web Searches** | Queries performed, results used |
-| **Tool Calls** | Which tools were used and how often |
-| **Preview URLs** | Links to deployed sites or previews |
-| **Notes** | Info, warnings, errors |
-
-Each category is **expandable** — drill in without visual overload.
-
----
-
-### Output Modal
-
-<p align="center">
-  <img src="https://raw.githubusercontent.com/SixHq/Overture/main/assets/feature-output-modal.png" alt="Output Modal" width="700">
-</p>
-
-Click any completed node to see full output:
-
-- **Scrollable** for long outputs
-- **Syntax highlighted** code snippets
-- **Close with Escape** or click outside
-
----
-
-## 🏪 MCP Marketplace
-
-<p align="center">
-  <img src="https://raw.githubusercontent.com/SixHq/Overture/main/assets/feature-marketplace.png" alt="MCP Marketplace" width="800">
-</p>
-
-**Browse and attach MCP servers directly from the Overture UI.**
-
-| Feature | Description |
-|---------|-------------|
-| **Built-in Marketplace** | Search and discover MCP servers |
-| **Server Details** | Descriptions, authors, GitHub links, stars |
-| **Category Browsing** | Filter by use case |
-| **Per-Node Attachment** | Attach specific tools to specific steps |
-| **Setup Instructions** | See how to configure each server |
-| **Recommended Servers** | Curated list for common tasks |
-
-When you attach an MCP server to a node, the agent gains access to those tools **only for that step**.
-
----
-
-## 📂 Multi-Project Support
-
-Work on multiple projects simultaneously:
-
-| Feature | Description |
-|---------|-------------|
-| **Tab Navigation** | Switch between projects instantly |
-| **Auto Registration** | Projects register on first agent contact |
-| **Isolated State** | Each project has separate plans, nodes, configs |
-| **Unread Badges** | Know when other projects have updates |
-| **Project Context** | See project name, path, and agent type |
-
-Single project? Tab bar hides automatically for a cleaner UI.
-
----
-
-## 📜 Plan History & Persistence
-
-Never lose your work:
-
-| Feature | Description |
-|---------|-------------|
-| **Auto-Save** | Plans saved every 3 seconds |
-| **Local Storage** | Stored in `~/.overture/history.json` |
-| **History Browser** | Slide-in panel with all past plans |
-| **Status Icons** | Completed, failed, executing, paused |
-| **Progress Bars** | Visual completion percentage |
-| **One-Click Resume** | Load and continue any past plan |
-| **Full Context** | All field values, branch selections, attachments preserved |
-
-### Resume Information
-
-When resuming, you get complete context:
-
-- **Current node** — where execution stopped
-- **Completed nodes** — with their outputs
-- **Pending nodes** — what's left to do
-- **Failed nodes** — with error messages
-- **All configurations** — field values, branches, attachments
-- **Timestamps** — when created, when paused
-
----
-
-## ✏️ Dynamic Plan Modification
-
-Modify plans even during execution:
-
-| Operation | Description |
-|-----------|-------------|
-| **Insert Nodes** | Add new steps mid-execution |
-| **Remove Nodes** | Delete steps (edges auto-reconnect) |
-| **Replace Content** | Update node title/description in-place |
-| **Batch Operations** | Multiple changes in one request |
-
-### Plan Diff View
-
-When a plan changes, see exactly what's different:
-
-- **Added nodes** — highlighted green
-- **Removed nodes** — highlighted red
-- **Modified nodes** — yellow with before/after comparison
-- **Edge changes** — added/removed connections
-
----
-
-## 🔌 MCP Tools (For Agent Developers)
-
-Overture exposes 11 MCP tools for agents to interact with:
-
-| Tool | Purpose |
-|------|---------|
-| `submit_plan` | Submit complete plan as XML |
-| `get_approval` | Wait for user approval (blocks until approved) |
-| `update_node_status` | Update node status + output during execution |
-| `plan_completed` | Mark plan as successfully completed |
-| `plan_failed` | Mark plan as failed with error message |
-| `check_rerun` | Check if user requested a node re-run |
-| `check_pause` | Check if user paused execution |
-| `get_resume_info` | Get full context for resuming a paused plan |
-| `request_plan_update` | Request incremental plan modifications |
-| `create_new_plan` | Signal creation of a new plan |
-| `get_usage_instructions` | Get agent-specific instructions |
-
----
-
-## 🔄 Real-time WebSocket Communication
-
-**19 server-to-client message types:**
-
-`connected` • `plan_started` • `node_added` • `edge_added` • `plan_ready` • `plan_approved` • `node_status_updated` • `plan_completed` • `plan_failed` • `plan_paused` • `plan_resumed` • `nodes_inserted` • `node_removed` • `project_registered` • `projects_list` • `history_entries` • `plan_loaded` • `resume_plan_info` • `plan_updated`
-
-**16 client-to-server message types:**
-
-`approve_plan` • `cancel_plan` • `rerun_request` • `pause_execution` • `resume_execution` • `insert_nodes` • `remove_node` • `register_project` • `subscribe_project` • `unsubscribe_project` • `get_history` • `load_plan` • `get_resume_info` • `save_plan` • `request_plan_update` • `create_new_plan`
-
-### Relay Mode
-
-When the WebSocket port is already in use, Overture automatically operates as a **relay client**, forwarding messages through the existing server. Multiple agent instances can share a single UI.
-
----
-
-## ⚙️ Configuration
-
-| Variable | Default | Description |
-|----------|---------|-------------|
-| `OVERTURE_HTTP_PORT` | `3031` | Port for the web UI |
-| `OVERTURE_WS_PORT` | `3030` | Port for WebSocket |
-| `OVERTURE_AUTO_OPEN` | `true` | Auto-open browser on start |
-
-### Setting Environment Variables
-
-<details>
-<summary><strong>Claude Code</strong></summary>
-
-```bash
-claude mcp add overture-mcp -e OVERTURE_HTTP_PORT=4000 -e OVERTURE_AUTO_OPEN=false -- npx overture-mcp
-```
-
-</details>
-
-<details>
-<summary><strong>Cursor / Cline / Sixth AI</strong></summary>
+Or add to your MCP config:
 
 ```json
 {
   "mcpServers": {
     "overture": {
       "command": "npx",
-      "args": ["overture-mcp"],
-      "env": {
-        "OVERTURE_HTTP_PORT": "4000",
-        "OVERTURE_WS_PORT": "4001",
-        "OVERTURE_AUTO_OPEN": "false"
-      }
+      "args": ["-y", "overture-mcp"]
     }
   }
 }
 ```
 
-</details>
+---
 
-<details>
-<summary><strong>GitHub Copilot</strong></summary>
+## ✨ Features
+
+| Feature | Description |
+|---------|-------------|
+| **Visual Plan Generation** | Automatically generates flowchart plans from prompts |
+| **Plan Approval** | Review and modify plans before execution |
+| **Real-time Execution** | Watch each step execute with progress tracking |
+| **Dependency Tracking** | See which tasks depend on each other |
+| **MCP Marketplace** | One-click install in your AI coding tool |
+| **Multi-Agent Support** | Coordinate multiple agents in one plan |
+
+---
+
+## 🛒 MCP Marketplace
+
+Overture is available in the MCP marketplace for easy integration:
+
+- **Cursor** — Settings → MCP → Marketplace → Overture
+- **Claude Code** — MCP config → Marketplace → Overture
+- **VS Code with Sixth** — Built-in, zero configuration
+
+---
+
+## ⚙️ Configuration
+
+### Basic MCP Config
 
 ```json
 {
-  "servers": {
+  "mcpServers": {
     "overture": {
       "command": "npx",
-      "args": ["overture-mcp"],
+      "args": ["-y", "overture-mcp"],
       "env": {
-        "OVERTURE_HTTP_PORT": "4000",
-        "OVERTURE_WS_PORT": "4001",
-        "OVERTURE_AUTO_OPEN": "false"
+        "OVERTURE_PORT": "3000"
       }
     }
   }
 }
 ```
 
-</details>
+### Environment Variables
+
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `OVERTURE_PORT` | `3000` | Port for UI dashboard |
+| `OVERTURE_LOG_LEVEL` | `info` | Logging level |
 
 ---
 
-## ⌨️ Keyboard Shortcuts
+## ❓ FAQ
 
-| Key | Action |
-|-----|--------|
-| `Enter` | Approve plan (when ready) |
-| `Space` | Pause / Resume execution |
-| `Escape` | Deselect current node / Close modal |
+### What is Overture?
+Overture is a **visual plan-first workflow system** for AI coding agents. It generates execution plans as visual flowcharts, lets you approve them, and then executes each step with real-time visibility.
 
----
+### How does Overture differ from other AI coding tools?
+**Traditional approach:** Agents immediately start writing code with zero visibility.
+**Overture approach:** Plan → Approve → Execute. You see the visual plan, modify it if needed, and watch execution in real-time.
 
-## 🤝 Supported Agents
+### Which AI coding tools does Overture support?
+- **Cursor** — MCP marketplace integration
+- **Claude Code** — MCP config integration
+- **VS Code with Sixth** — Built-in (zero config)
+- **Cline/Copilot** — MCP marketplace (coming soon)
 
-| Agent | Status | Notes |
-|-------|--------|-------|
-| **Claude Code** | ✅ Full | Native MCP support |
-| **Cursor** | ✅ Full | Via mcp.json config |
-| **Cline** | ✅ Full | Via VS Code settings |
-| **GitHub Copilot** | ✅ Full | VS Code 1.99+ required |
-| **Sixth AI** | ✅ Full | Built-in, zero config |
+### How do I install Overture?
+**Recommended:** Use MCP marketplace in your AI coding tool (one-click install).
+**Manual:** `npm install -g overture-mcp` or add to MCP config.
 
-Each agent has **custom-tailored prompts** for optimal plan generation.
+### What does the visual plan show?
+- **Nodes** — Each step in the execution plan
+- **Edges** — Dependencies between steps
+- **Colors** — Status (pending, running, done, failed)
+- **Sizes** — Complexity/risk level
+- **Labels** — Files, APIs, context requirements
 
----
+### Can I modify the plan before execution?
+Yes! You can:
+- Drag nodes to reorder
+- Add/delete steps
+- Edit step details
+- Mark steps as optional
 
-## 💪 Why Overture?
+### What is the MCP marketplace?
+MCP (Model Context Protocol) marketplace lets you install tools like Overture with one click in your AI coding tool. No manual config required.
 
-<table>
-<tr>
-<td width="50%">
+### Is Overture open source?
+Yes! MIT licensed. See [CONTRIBUTING.md](CONTRIBUTING.md) to contribute.
 
-### For Users
-
-- **Transparency** — See exactly what happens before code is written
-- **Control** — Approve, reject, or modify any plan
-- **Context** — Attach files and instructions to the right steps
-- **Choice** — Compare approaches and pick your path
-- **Visibility** — Real-time progress with rich output
-- **Safety** — Pause, resume, or re-run at any time
-- **History** — Resume any past plan instantly
-- **Efficiency** — No wasted tokens on rejected approaches
-
-</td>
-<td width="50%">
-
-### For AI Coding
-
-- **Trust** — Makes agents predictable and controllable
-- **Interpretability** — See AI reasoning before execution
-- **Universal** — Works with any MCP-compatible agent
-- **Extensible** — MCP Marketplace for tool discovery
-- **Open Source** — MIT licensed, community-driven
-- **Self-Contained** — No cloud dependencies
-- **Works Offline** — Fully local execution
-- **Multi-Project** — Manage multiple workspaces
-
-</td>
-</tr>
-</table>
+### Where can I get help?
+- [GitHub Discussions](https://github.com/SixHq/Overture/discussions) for questions
+- [GitHub Issues](https://github.com/SixHq/Overture/issues) for bugs
+- Try [Sixth for VS Code](https://marketplace.visualstudio.com/items?itemName=Sixth.sixth-ai) for built-in support
 
 ---
 
-## 🧑‍💻 Development
+## 🔧 Development
+
+### Local Development
 
 ```bash
 # Clone the repo
 git clone https://github.com/SixHq/Overture.git
-cd Overture
 
 # Install dependencies
 npm install
@@ -690,8 +240,8 @@ npm install
 # Build all packages
 npm run build
 
-# Start MCP server (in one terminal)
-cd packages/mcp-server && npm start
+# Run MCP server
+npm run dev
 
 # Start UI dev server (in another terminal)
 cd packages/ui && npm run dev
